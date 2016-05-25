@@ -1,0 +1,64 @@
+public class Activity : Activity
+{
+  #region Atributos
+  private string marca {get; set;}
+  private string ropa {get; set;}
+  private string resultQuery {get; set;}
+  private string strParametros {get; set;}
+  private Brands lstMarcas {get; set;}
+  private Clothes lstRopa {get; set;}
+  #endregion
+  
+  #region Controles
+  Button btnQuery;
+  TextBox txtParametro; 
+  Label lblBrands; 
+  Label lblClothingTypes;
+  Label lblResultQuery;
+  #endregion
+  
+  protected override void OnCreate(Bundle bundle)
+  {
+    Base.OnCreate(bundle);
+    
+    SetContentView(Resource.Layout.Main);
+    
+    IniciarControles();
+    
+    DefinirEventosBtn();
+  }
+
+  protected void IniciarControles(){
+    btnQuery = FindViewById<Button>(Resource.Id.btnQuery);
+    lblBrands = FindViewById<Label>(Resource.Id.lblBrands);
+    lblClothingTypes = FindViewById<Label>(Resource.Id.lblClothingTypes);
+    lblResultQuery = FindViewById<Label>(Resource.Id.lblResultQuery);
+  }
+  
+  protected void DefinirEventosBtn(){
+    btnQuery.Click += btnQuery_Click;
+  }
+
+  void btnQuery_Click(Object sender, EventArgs e) {
+    JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+    
+    lstMarcas = (lstMarcas)json_serializer.DeserializeObject(new ClientService().ObtenerListAsync ("http://private-8a477-pruebatl.apiary-mock.com/brands"));
+    lstRopa = (lstRopa)json_serializer.DeserializeObject(new ClientService().ObtenerListAsync("http://private-8a477-pruebatl.apiary-mock.com/clothes"));
+    
+    strParametros = txtParametro.Text.Split(' ');
+    Analizador oAnalizador = new Analizador();
+    oAnalizador.AnalizarQuery(strParametros, lstMarcas, lstRopa);
+    
+    this.marca = oAnalizador.marca;
+    this.ropa = oAnalizador.ropa;
+    this.resultQuery = oAnalizador.resultQuery;
+    
+    PintarResultado();
+  }
+
+  private void PintarResultado(){
+    lblBrands.Text = this.marca;
+    lblClothingTypes.Text = this.ropa;
+    lblResultQuery.Text = this.resultQuery;
+  }
+}

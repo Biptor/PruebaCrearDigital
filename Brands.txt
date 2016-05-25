@@ -1,0 +1,4 @@
+public class Brands
+{
+  private Name[] brands {get; set;}
+}

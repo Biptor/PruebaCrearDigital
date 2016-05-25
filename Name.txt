@@ -1,0 +1,4 @@
+public class Name
+{
+  private string name {get; set;}
+}
