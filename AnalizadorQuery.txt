@@ -1,41 +1,69 @@
-public class AnalizadorQuery
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+using App1.Entidades;
+
+namespace App1.Controladora
 {
-  private string marca {get; set;}
-  private string ropa {get; set;}
-  private string resultQuery {get; set;}
+    public class AnalizadorQuery
+    {
+        public string marca { get; set; }
+        public string ropa { get; set; }
+        public string resultQuery { get; set; }
 
-  public Analizador(){}
-  
-  public void AnalizarQuery(string strQuery, Brands lstMarcas, Clothes lstRopa){
+        public AnalizadorQuery() { }
 
-    foreach(string parametro in strQuery){
-      if(lstMarcas.Where(x => x.name.Equals(parametro))){
-        if(String.IsNullOrEmpty(marca)){
-          marca = parametro;
-        } 
-        else{
-          marca = String.Format("{0}, {1}", marca, parametro);
+        public void AnalizarQuery(string[] strQuery, Brands lstMarcas, Clothes lstRopa)
+        {
+
+            foreach (string parametro in strQuery)
+            {
+                if (lstMarcas.brands.Where(x => x.name.Equals(parametro)).Count() > 0)
+                {
+                    if (String.IsNullOrEmpty(marca))
+                    {
+                        marca = parametro;
+                    }
+                    else
+                    {
+                        marca = String.Format("{0}, {1}", marca, parametro);
+                    }
+                }
+                else
+                {
+                    if (lstRopa.clothes.Where(x => x.name.Equals(parametro)).Count() > 0)
+                    {
+                        if (String.IsNullOrEmpty(ropa))
+                        {
+                            ropa = parametro;
+                        }
+                        else
+                        {
+                            ropa = String.Format("{0}, {1}", ropa, parametro);
+                        }
+                    }
+                    else
+                    {
+                        if (String.IsNullOrEmpty(resultQuery))
+                        {
+                            resultQuery = parametro;
+                        }
+                        else
+                        {
+                            resultQuery = String.Format("{0}, {1}", resultQuery, parametro);
+                        }
+                    }
+                }
+            }
         }
-      }
-      else{
-        if(lstRopa.Where(x => x.name.Equals(parametro))){
-          if(String.IsNullOrEmpty(ropa)){
-            ropa = parametro;
-          }
-          else{
-            ropa = String.Format("{0}, {1}", ropa, parametro);
-          }
-        }
-        else{
-          if(String.IsNullOrEmpty(query)){
-            resultQuery = parametro;
-          }
-          else{
-            resultQuery = String.Format("{0}, {1}", resultQuery, parametro);
-          }
-        }
-      }
+
     }
-  }
-  
 }
