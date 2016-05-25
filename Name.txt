@@ -1,4 +1,7 @@
-public class Name
+namespace App1.Entidades
 {
-  private string name {get; set;}
+    public class Name
+    {
+        public string name { get; set; }
+    }
 }
