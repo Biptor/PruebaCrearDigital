@@ -1,64 +1,95 @@
-public class Activity : Activity
+using System;
+using Android.App;
+using Android.Content;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+using Android.OS;
+using App1.Entidades;
+using App1.Client;
+using App1.Controladora;
+using Newtonsoft.Json;
+
+namespace App1
 {
-  #region Atributos
-  private string marca {get; set;}
-  private string ropa {get; set;}
-  private string resultQuery {get; set;}
-  private string strParametros {get; set;}
-  private Brands lstMarcas {get; set;}
-  private Clothes lstRopa {get; set;}
-  #endregion
-  
-  #region Controles
-  Button btnQuery;
-  TextBox txtParametro; 
-  Label lblBrands; 
-  Label lblClothingTypes;
-  Label lblResultQuery;
-  #endregion
-  
-  protected override void OnCreate(Bundle bundle)
-  {
-    Base.OnCreate(bundle);
-    
-    SetContentView(Resource.Layout.Main);
-    
-    IniciarControles();
-    
-    DefinirEventosBtn();
-  }
+    [Activity(Label = "App1", MainLauncher = true, Icon = "@drawable/icon")]
+    public class MainActivity : Activity
+    {
+        int count = 1;
 
-  protected void IniciarControles(){
-    btnQuery = FindViewById<Button>(Resource.Id.btnQuery);
-    lblBrands = FindViewById<Label>(Resource.Id.lblBrands);
-    lblClothingTypes = FindViewById<Label>(Resource.Id.lblClothingTypes);
-    lblResultQuery = FindViewById<Label>(Resource.Id.lblResultQuery);
-  }
-  
-  protected void DefinirEventosBtn(){
-    btnQuery.Click += btnQuery_Click;
-  }
+        #region Atributos
+        private string marca { get; set; }
+        private string ropa { get; set; }
+        private string resultQuery { get; set; }
+        private string[] strParametros { get; set; }
+        private Brands lstMarcas { get; set; }
+        private Clothes lstRopa { get; set; }
+        #endregion
 
-  void btnQuery_Click(Object sender, EventArgs e) {
-    JavaScriptSerializer json_serializer = new JavaScriptSerializer();
-    
-    lstMarcas = (lstMarcas)json_serializer.DeserializeObject(new ClientService().ObtenerListAsync ("http://private-8a477-pruebatl.apiary-mock.com/brands"));
-    lstRopa = (lstRopa)json_serializer.DeserializeObject(new ClientService().ObtenerListAsync("http://private-8a477-pruebatl.apiary-mock.com/clothes"));
-    
-    strParametros = txtParametro.Text.Split(' ');
-    Analizador oAnalizador = new Analizador();
-    oAnalizador.AnalizarQuery(strParametros, lstMarcas, lstRopa);
-    
-    this.marca = oAnalizador.marca;
-    this.ropa = oAnalizador.ropa;
-    this.resultQuery = oAnalizador.resultQuery;
-    
-    PintarResultado();
-  }
+        #region Controles
+        Button btnQuery;
+        EditText txtParametro;
+        TextView lblBrands;
+        TextView lblClothingTypes;
+        TextView lblResultQuery;
+        #endregion
 
-  private void PintarResultado(){
-    lblBrands.Text = this.marca;
-    lblClothingTypes.Text = this.ropa;
-    lblResultQuery.Text = this.resultQuery;
-  }
+        protected override void OnCreate(Bundle bundle)
+        {
+            base.OnCreate(bundle);
+
+            // Set our view from the "main" layout resource
+            SetContentView(Resource.Layout.Main);
+
+            // Get our button from the layout resource,
+            // and attach an event to it
+            Button button = FindViewById<Button>(Resource.Id.MyButton);
+
+            button.Click += delegate { button.Text = string.Format("{0} clicks!", count++); };
+
+            IniciarControles();
+
+            DefinirEventosBtn();
+        }
+
+        protected void IniciarControles()
+        {
+            btnQuery = FindViewById<Button>(Resource.Id.btnQuery);
+            txtParametro = FindViewById<EditText>(Resource.Id.txtParametro);
+            lblBrands = FindViewById<TextView>(Resource.Id.lblBrands);
+            lblClothingTypes = FindViewById<TextView>(Resource.Id.lblClothingTypes);
+            lblResultQuery = FindViewById<TextView>(Resource.Id.lblResultQuery);
+        }
+
+        protected void DefinirEventosBtn()
+        {
+            btnQuery.Click += btnQuery_Click;
+        }
+
+        void btnQuery_Click(Object sender, EventArgs e)
+        {
+            //JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+
+            lstMarcas = (Brands)JsonConvert.DeserializeObject(new ClientService().ObtenerListAsync("http://private-8a477-pruebatl.apiary-mock.com/brands").ToString());
+            lstRopa = (Clothes)JsonConvert.DeserializeObject(new ClientService().ObtenerListAsync("http://private-8a477-pruebatl.apiary-mock.com/clothes").ToString());
+
+            strParametros = txtParametro.Text.Split(' ');
+            AnalizadorQuery oAnalizador = new AnalizadorQuery();
+            oAnalizador.AnalizarQuery(strParametros, lstMarcas, lstRopa);
+
+            this.marca = oAnalizador.marca;
+            this.ropa = oAnalizador.ropa;
+            this.resultQuery = oAnalizador.resultQuery;
+
+            PintarResultado();
+        }
+
+        private void PintarResultado()
+        {
+            lblBrands.Text = this.marca;
+            lblClothingTypes.Text = this.ropa;
+            lblResultQuery.Text = this.resultQuery;
+        }
+    }
 }
+
