@@ -1,4 +1,7 @@
-public class Brands
+namespace App1.Entidades
 {
-  private Name[] brands {get; set;}
+    public class Brands
+    {
+        public Name[] brands { get; set; }
+    }
 }
